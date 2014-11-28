@@ -66,6 +66,8 @@
         var fontColor = series.valueLabels.fontcolor;
         var xOffset = series.valueLabels.xOffset || 0;
         var yOffset = series.valueLabels.yoffset || 0;
+        var xOffsetP = series.valueLabels.xOffsetP;
+        var yOffsetP = series.valueLabels.yOffsetP;
         var xOffsetMin = series.valueLabels.xOffsetMin || xOffset;
         var yOffsetMin = series.valueLabels.yOffsetMin || yOffset;
         var xOffsetMax = series.valueLabels.xOffsetMax || xOffset;
