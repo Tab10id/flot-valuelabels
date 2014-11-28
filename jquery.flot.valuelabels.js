@@ -31,7 +31,19 @@
         plotAxis: 'y', // Set to the axis values you wish to plot
         decimals: false,
         hideZero: false,
-        hideSame: false // Hide consecutive labels of the same value
+        hideSame: false, // Hide consecutive labels of the same value
+        fontColor: '#666666',
+        xOffset: 0,
+        yOffset: 0,
+        xOffsetMin: 0,
+        yOffsetMin: 0,
+        xOffsetMax: 0,
+        yOffsetMax: 0,
+        xOffsetLast: 0,
+        yOffsetLast: 0,
+        valignLast: 'top',
+        valignMin: 'top',
+        valignMax: 'top'
       }
     }
   };
@@ -49,15 +61,15 @@
         var showMinValue = series.valueLabels.showMinValue;
         var plotAxis = series.valueLabels.plotAxis;
         var labelFormatter = series.valueLabels.labelFormatter;
-        var fontcolor = series.valueLabels.fontcolor;
-        var xoffset = series.valueLabels.xoffset || 0;
-        var yoffset = series.valueLabels.yoffset || 0;
-        var xoffsetMin = series.valueLabels.xoffsetMin || xoffset;
-        var yoffsetMin = series.valueLabels.yoffsetMin || yoffset;
-        var xoffsetMax = series.valueLabels.xoffsetMax || xoffset;
-        var yoffsetMax = series.valueLabels.yoffsetMax || yoffset;
-        var xoffsetLast = series.valueLabels.xoffsetLast || xoffset;
-        var yoffsetLast = series.valueLabels.yoffsetLast || yoffset;
+        var fontColor = series.valueLabels.fontcolor;
+        var xOffset = series.valueLabels.xOffset || 0;
+        var yOffset = series.valueLabels.yoffset || 0;
+        var xOffsetMin = series.valueLabels.xOffsetMin || xOffset;
+        var yOffsetMin = series.valueLabels.yOffsetMin || yOffset;
+        var xOffsetMax = series.valueLabels.xOffsetMax || xOffset;
+        var yOffsetMax = series.valueLabels.yOffsetMax || yOffset;
+        var xOffsetLast = series.valueLabels.xOffsetLast || xOffset;
+        var yOffsetLast = series.valueLabels.yOffsetLast || yOffset;
         var align = series.valueLabels.align;
         var valign = series.valueLabels.valign;
         var valignLast = series.valueLabels.valignLast || valign;
@@ -67,7 +79,7 @@
         var hideZero = series.valueLabels.hideZero;
         var hideSame = series.valueLabels.hideSame;
         var useDecimalComma = series.valueLabels.useDecimalComma;
-        var stackedbar = series.stack;
+        var stackedBar = series.stack;
         var decimals = series.valueLabels.decimals;
         // Workaround, since Flot doesn't set this value anymore
         series.seriesIndex = ii;
@@ -75,9 +87,9 @@
           plot.getPlaceholder().find("#valueLabels"+ii).remove();
         }
         var html = '<div id="valueLabels' + series.seriesIndex + '" class="valueLabels">';
-        var last_val = null;
-        var last_x = -1000;
-        var last_y = -1000;
+        var lastVal = null;
+        var lastX = -1000;
+        var lastY = -1000;
         var categories = series.xaxis.options.mode == 'categories';
 
         if ((showMinValue || showMaxValue) && typeof(series.data[0]) != 'undefined') {
@@ -102,34 +114,38 @@
           if (series.data[i] === null) continue;
           var x = series.data[i][0], y = series.data[i][1];
 
+          var xDelta;
+          var yDelta;
+          var valignWork;
+
           if (notShowAll) {
             var doWork = false;
             if (showMinValue && ((yMin == y && plotAxis == 'y') || (xMin == x && plotAxis == 'x'))) {
               doWork = true;
-              var xdelta = xoffsetMin;
-              var ydelta = yoffsetMin;
-              var valignWork = valignMin;
+              xDelta = xOffsetMin;
+              yDelta = yOffsetMin;
+              valignWork = valignMin;
               showMinValue = false;
             }
             else if (showMaxValue && ((yMax == y && plotAxis == 'y') || (xMax == x && plotAxis == 'x'))) {
               doWork = true;
-              var xdelta = xoffsetMax;
-              var ydelta = yoffsetMax;
-              var valignWork = valignMax;
+              xDelta = xOffsetMax;
+              yDelta = yOffsetMax;
+              valignWork = valignMax;
               showMaxValue = false;
             }
             else if (showLastValue && i == series.data.length-1) {
               doWork = true;
-              var xdelta = xoffsetLast;
-              var ydelta = yoffsetLast;
-              var valignWork = valignLast;
+              xDelta = xOffsetLast;
+              yDelta = yOffsetLast;
+              valignWork = valignLast;
             }
             if (!doWork) continue;
           }
           else {
-            var xdelta = xoffset;
-            var ydelta = yoffset;
-            var valignWork = valign;
+            xDelta = xOffset;
+            yDelta = yOffset;
+            valignWork = valign;
           }
           if (categories) {
             x = series.xaxis.categories[x];
@@ -139,7 +155,7 @@
           if(val == null) {
             val = ''
           }
-          if (val === 0 && (hideZero || stackedbar)) continue;
+          if (val === 0 && (hideZero || stackedBar)) continue;
 
           if (decimals !== false) {
             var mult = Math.pow(10, decimals);
@@ -160,68 +176,69 @@
           if (useDecimalComma) {
             val = val.toString().replace('.', ',');
           }
-          if (!hideSame || val != last_val || i == series.data.length - 1) {
-            ploty = y;
+          if (!hideSame || val != lastVal || i == series.data.length - 1) {
+            var plotY = y;
             if (valignWork == 'bottom') {
-               ploty = 0;
+               plotY = 0;
             }
             else if (valignWork == 'middle') {
-               ploty = ploty / 2;
-               ydelta = 11 + ydelta;
+               plotY = plotY / 2;
+               yDelta = 11 + yDelta;
             }
             else if (valignWork == 'below') {
-               ydelta = 20 + ydelta;
+               yDelta = 20 + yDelta;
             }
 
             // add up y axis for stacked series
             var addstack = 0;
-            if (stackedbar) {
+            if (stackedBar) {
                if (!stacked[x]) stacked[x] = 0.0;
                addstack = stacked[x];
                stacked[x] = stacked[x] + y;
             }
 
             var xx = series.xaxis.p2c(x) + plot.getPlotOffset().left;
-            var yy = series.yaxis.p2c(+ploty + addstack) - 12 + plot.getPlotOffset().top;
-            if (!hideSame || Math.abs(yy - last_y) > 20 || last_x < xx) {
-              last_val = val;
-              last_x = xx + val.length * 8;
-              last_y = yy;
+            var yy = series.yaxis.p2c(+plotY + addstack) - 12 + plot.getPlotOffset().top;
+            if (!hideSame || Math.abs(yy - lastY) > 20 || lastX < xx) {
+              lastVal = val;
+              lastX = xx + val.length * 8;
+              lastY = yy;
               if (!showAsHtml) {
                 // Little 5 px padding here helps the number to get
                 // closer to points
-                x_pos = xx + xdelta;
-                y_pos = yy + 6 + ydelta;
+                var xPos = xx + xDelta;
+                var yPos = yy + 6 + yDelta;
+                var actAlign;
                 // If the value is on the top of the canvas, we need
                 // to push it down a little
-                if (yy <= 0) y_pos = 18;
+                if (yy <= 0) yPos = 18;
                 // The same happens with the x axis
                 if (xx >= plot.width() + plot.getPlotOffset().left) {
-                  x_pos = plot.width() + plot.getPlotOffset().left + xdelta - 3;
-                  var actAlign = 'right';
+                  xPos = plot.width() + plot.getPlotOffset().left + xDelta - 3;
+                  actAlign = 'right';
                 }
                 else {
-                  var actAlign = align;
+                  actAlign = align;
                 }
                 if (font) {
                   ctx.font = font;
                 }
-                if(typeof(fontcolor) != 'undefined') {
-                  ctx.fillStyle = fontcolor;
+                if(typeof(fontColor) != 'undefined') {
+                  ctx.fillStyle = fontColor;
                 }
                 ctx.shadowOffsetX = 0;
                 ctx.shadowOffsetY = 0;
                 ctx.shadowBlur = 1.5;
-                if(typeof(fontcolor) != 'undefined') {
-                  ctx.shadowColor = fontcolor;
+                if(typeof(fontColor) != 'undefined') {
+                  ctx.shadowColor = fontColor;
                 }
                 ctx.textAlign = actAlign;
-                ctx.fillText(val, x_pos, y_pos);
+                ctx.fillText(val, xPos, yPos);
               }
               else {
                 //allow same offsets for html rendering
-                xx = xx + xoffset;
-                yy = yy + 6 + yoffset;
+                xx = xx + xOffset;
+                yy = yy + 6 + yOffset;
 
                 var head = '<div style="left:' + xx + 'px;top:' + yy + 'px;" class="valueLabel';
                 var tail = '">' + val + '</div>';
