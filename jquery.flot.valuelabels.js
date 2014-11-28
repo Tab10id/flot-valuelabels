@@ -13,8 +13,7 @@
 * Original homepage: http://sites.google.com/site/petrsstuff/projects/flotvallab
 * Released under the MIT license by Petr Blahos, December 2009.
 */
-(function ($)
-{
+(function ($) {
   var options = {
     series: {
       valueLabels: {
