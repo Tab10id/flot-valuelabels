@@ -61,9 +61,9 @@
         var showMinValue = series.valueLabels.showMinValue;
         var plotAxis = series.valueLabels.plotAxis;
         var labelFormatter = series.valueLabels.labelFormatter;
-        var fontColor = series.valueLabels.fontcolor;
+        var fontColor = series.valueLabels.fontColor;
         var xOffset = series.valueLabels.xOffset || 0;
-        var yOffset = series.valueLabels.yoffset || 0;
+        var yOffset = series.valueLabels.yOffset || 0;
         var xOffsetMin = series.valueLabels.xOffsetMin || xOffset;
         var yOffsetMin = series.valueLabels.yOffsetMin || yOffset;
         var xOffsetMax = series.valueLabels.xOffsetMax || xOffset;
