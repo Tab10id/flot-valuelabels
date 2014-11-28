@@ -35,6 +35,8 @@
         fontColor: '#666666',
         xOffset: 0,
         yOffset: 0,
+        xOffsetP: 0,
+        yOffsetP: 0,
         xOffsetMin: 0,
         yOffsetMin: 0,
         xOffsetMax: 0,
@@ -206,8 +208,8 @@
               if (!showAsHtml) {
                 // Little 5 px padding here helps the number to get
                 // closer to points
-                var xPos = xx + xDelta;
-                var yPos = yy + 6 + yDelta;
+                var xPos = xx + xDelta + (series.xaxis.p2c(x+1) - series.xaxis.p2c(x)) * xOffsetP;
+                var yPos = yy + 6 + yDelta + (series.yaxis.p2c(y+1) - series.yaxis.p2c(y)) * yOffsetP;
                 var actAlign;
                 // If the value is on the top of the canvas, we need
                 // to push it down a little
